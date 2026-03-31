@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAMPAGE TERMINAL | V2.1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --accent: #9a7b2f;
+            --panic: #ff1a1a;
+            --bg: #050505;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background: var(--bg);
+            color: #cfcfcf;
+            font-family: 'Courier New', monospace;
+            overflow-x: hidden;
+            background-attachment: fixed;
+        }
+
+        /* OVERLAYS */
+        .grid-bg, .scan, .noise {
+            position: fixed; inset: 0; pointer-events: none !important; z-index: 5;
+        }
+        .grid-bg {
+            background: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .scan {
+            background: repeating-linear-gradient(to bottom, transparent, transparent 2px, rgba(255,255,255,0.03) 3px);
+            opacity: 0.4; z-index: 100;
+        }
+
+        /* START OVERLAY (To allow Audio) */
+        #start-screen {
+            position: fixed; inset: 0; background: black; z-index: 3000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer;
+        }
+        .glitch-btn {
+            border: 1px solid var(--accent); color: var(--accent);
+            padding: 20px 40px; font-weight: bold; letter-spacing: 5px;
+            transition: all 0.3s;
+        }
+        .glitch-btn:hover { background: var(--accent); color: black; box-shadow: 0 0 20px var(--accent); }
+
+        /* LOGO ROTATION */
+        .logo-wrap {
+            width: 50px; height: 50px;
+            animation: rotateLogo 10s linear infinite;
+        }
+        @keyframes rotateLogo {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* HEADER STATIC */
+        header.top-nav {
+            position: absolute; top: 0; width: 100%; height: 100px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 40px; z-index: 500;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* TOTAL TAB */
+        .total-tab {
+            background: rgba(154, 123, 47, 0.1);
+            border: 1px solid var(--accent);
+            padding: 10px 20px;
+            display: flex; gap: 30px;
+            font-size: 12px;
+        }
+        .total-item span { color: var(--accent); font-weight: bold; }
+
+        /* LAYOUT */
+        .hero { min-height: 60vh; display: flex; flex-direction: column; justify-content: center; padding-left: 60px; }
+        .title { font-size: clamp(50px, 15vw, 160px); font-weight: 900; line-height: 0.8; letter-spacing: -5px; }
+
+        .layout {
+            display: grid; grid-template-columns: 250px 1fr 250px;
+            gap: 40px; padding: 0 60px 100px; position: relative; z-index: 10;
+        }
+
+        .card {
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(10,10,10,0.9);
+            padding: 20px; position: relative;
+        }
+
+        video { width: 100%; aspect-ratio: 16/9; background: #000; object-fit: cover; }
+
+        /* AI FEATURE: DATA STREAM */
+        #data-stream { font-size: 8px; color: var(--accent); opacity: 0.3; overflow: hidden; height: 200px; }
+    </style>
+</head>
+<body>
+
+<div id="start-screen">
+    <div class="glitch-btn">INITIATE SYSTEM_</div>
+    <div class="text-[10px] mt-4 text-gray-600 uppercase tracking-widest">Click to establish secure link</div>
+</div>
+
+<div class="grid-bg"></div>
+<div class="scan"></div>
+<div class="noise"></div>
+
+<header class="top-nav">
+    <div class="flex items-center gap-6">
+        <div class="logo-wrap">
+            <img src="./assets/images/logo.png" alt="LOGO" class="w-full h-full object-contain" onerror="this.src='https://cdn-icons-png.flaticon.com/512/577/577585.png';">
+        </div>
+        <div class="text-[10px] tracking-widest hidden md:block">
+            RAMPAGE_OS // MODULE_2.1<br>
+            <span class="text-gray-600">ENCRYPTION: ACTIVE</span>
+        </div>
+    </div>
+
+    <div class="total-tab">
+        <div class="total-item">TOTAL_INF: <span id="total-inf">0</span></div>
+        <div class="total-item">TOTAL_VEH: <span id="total-veh">0</span></div>
+    </div>
+
+    <div class="text-right">
+        <input id="volume" type="range" min="0" max="1" step="0.01" value="0.5" class="w-24 accent-[#9a7b2f]">
+        <div class="text-[9px] text-gray-500 mt-1 uppercase">Audio_Gain</div>
+    </div>
+</header>
+
+<section class="hero">
+    <div class="title">RAMPAGE</div>
+    <div class="subtitle text-[12px] tracking-[10px] text-[#9a7b2f]">COMBAT_ARCHIVE</div>
+</section>
+
+<div class="layout">
+    <aside>
+        <div class="sticky top-20 space-y-10">
+            <div class="text-[11px] leading-relaxed">
+                <span class="text-[var(--accent)]">● SYSTEM_LOGS</span><br>
+                STATUS: ENCRYPTED<br>
+                SIGNAL: 2.44 GB/S<br>
+                USER: OPERATOR
+            </div>
+            <div id="data-stream" class="font-mono"></div>
+        </div>
+    </aside>
+
+    <main id="feed" class="space-y-40"></main>
+
+    <aside>
+        <div class="sticky top-20 text-right space-y-6">
+            <div class="text-[11px] leading-relaxed">
+                <span class="text-[var(--accent)]">UPLINK_NODE ●</span><br>
+                STATION: OMEGA_01<br>
+                LATENCY: 14MS<br>
+                BUFFER: 100%
+            </div>
+        </div>
+    </aside>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
